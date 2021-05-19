@@ -37,7 +37,11 @@
     <script type="text/javascript" src="data/rank_company.js"></script>
     <script type="text/javascript" src="data/rank_time.js"></script>
     <script type="text/javascript">
-	
+	let nowClientWidth = document.documentElement.clientWidth;
+	let nowClientHeight = document.documentElement.clientHeight;
+	function nowSize(val,initWidth=1920, initHeight=800){
+		return Math.min(val * (nowClientWidth/initWidth), val * (nowClientHeight/initHeight));
+	}
 	function change_data(){
 		var data_id = parseInt(all_select.value);
 		if(data_id == 0) data_now = all_data;			
@@ -159,13 +163,13 @@
 				legend: {
 					top: '5%',
 					right: '5%',
-					itemWidth: 20,
-					itemHeight: 5,
-					itemGap: 80,
+					itemWidth: 10,
+					itemHeight: 10,
+					itemGap: nowSize(20),
 					icon: 'horizontal',
 					textStyle: {
 						color: '#ffffff',
-						fontSize: 20,
+						fontSize: nowSize(30),
 					},
 					data: legend
 				},
@@ -245,7 +249,11 @@
 						show: false
 					},
 					axisLabel: {
-						show: false
+						show: false,
+						textStyle: {
+							color: '#ffffff',
+							fontSize: nowSize(30),
+						}
 					},
 					data: xData
 				}, 
@@ -266,7 +274,7 @@
 						//padding:[30,0,0,0],
 						textStyle: {
 							color: '#ffffff',
-							fontSize: 20
+							fontSize: nowSize(30),
 						},
 						align: "center"
 					},
@@ -285,7 +293,11 @@
 						show: false
 					},
 					axisLabel: {
-						show: false
+						show: false,
+						textStyle: {
+							color: '#ffffff',
+							fontSize: nowSize(30),
+						}
 					},
 					data: xData
 				}],
@@ -293,6 +305,10 @@
 				dataZoom : [{
 					type: 'slider',
 					show: true,
+					zoomLock:true,
+					moveOnMouseMove: true,
+					zoomOnMouseMove: false,
+					width: 0,
 					yAxisIndex: [0, 1, 2],//设置组件控制的y轴
 					left: '93%',//距离左侧的距离 可以使百分比，也可以是像素 left: '30'（30像素）
 					start: 0,
@@ -306,7 +322,8 @@
 			series: [{
 					name: "Domination (Lower Bound)",
 					type: "bar",
-					barWidth:14,
+					barWidth:'30%',
+					barCategoryGap: '5%',
 					stack: "1",
 					itemStyle: {
 						normal: {
@@ -333,7 +350,8 @@
 				{
 					name: "Domination (Upper Bound)",
 					type: "bar",
-					barWidth: 14,
+					barWidth: '30%',
+					barCategoryGap: '5%',
 					stack: "2",
 					itemStyle: {
 						normal: {
@@ -360,7 +378,8 @@
 					name: "Value (Lower Bound)",
 					type: "bar",
 					stack: "3",
-					barWidth: 14,
+					barWidth: '30%',
+					barCategoryGap: '5%',
 					xAxisIndex: 2,
 					yAxisIndex: 2,
 					itemStyle: {
@@ -388,7 +407,8 @@
 					name: "Value (Upper Bound)",
 					type: "bar",
 					stack: "4",
-					barWidth: 14,
+					barWidth: '30%',
+					barCategoryGap: '5%',
 					xAxisIndex: 2,
 					yAxisIndex: 2,
 					itemStyle: {
@@ -419,6 +439,14 @@
 		}
 	}
 	query_data();
+	window.onresize = function(){
+		nowClientWidth = document.documentElement.clientWidth;
+		nowClientHeight = document.documentElement.clientHeight;
+		console.log(nowClientHeight);
+		query_data()
+		chart.resize();
+		//myChart1.resize();    //若有多个图表变动，可多写
+	}
     </script>
 </html>
     
