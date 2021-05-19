@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+    <head>
+        <meta charset="utf-8">
+        <style type="text/css">
+            ul,li{list-style: none;margin:0;padding:0;float:left;}
+            body, html,#panel{width: 100%; height: 100%; overflow: hidden; margin:0; font-family:"微软雅黑";}
+            #container{width: 100%; height: 100%; float:left;font-family:"微软雅黑";}
+            #control{width: 100%; height: 5%; float:left;margin:0; font-family:"微软雅黑";}
+            #display{width: 100%; height: 95%; float:left;margin:0; font-family:"微软雅黑";}
+        </style>
+    </head>
+    <body style="height: 100%; margin: 0">
+        <div id="container" style="height: 100%">
+            <div id="control">
+				<select id="city" onchange="query_data()"></select>
+				<label>顺序：</label>
+				<select id="sort" onchange="query_data()">
+					<option value="0"> val-low </option>
+					<option value="1"> val-up </option>
+					<!--<option value="2"> dom-low </option>
+					<option value="3"> dom-up </option>-->
+				</select>
+            </div>
+			<div id="display"></div>
+        </div>
+    </body>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <script type="text/javascript" src="data/rank_city.js"></script>
+    <script type="text/javascript">
+	function build_list(dct_data){
+		var lst_data = [];
+		for (var key in dct_data){
+			lst_data.push(key);
+		}
+		return lst_data;
+	}
+	var display_cont = document.getElementById("display");
+	var chart = echarts.init(display_cont);
+	
+	var city_list = build_list(city_data);
+
+	// var city_list = ['city1', 'city2', 'city3', 'city4'];
+	// var time_list = ['2018H2', '2019H1'];
+	// var experience_list = ['毕业生', '3-5年', '5-7年'];
+	
+	var city_select = document.getElementById('city');
+	var sort_select = document.getElementById('sort');
+	
+	//var city_select = document.getElementById('city');
+	//var time_select = document.getElementById('time');
+	//var experience_select = document.getElementById('experience');
+	
+	build_options(city_select, city_list);
+	//build_options(city_select, city_list);
+	//build_options(time_select, time_list);
+	//build_options(experience_select, experience_list);
+	
+	function createOpt(value, content){
+		var opt = document.createElement('option');
+		opt.innerHTML = content;
+		opt.value = value;
+		return opt;
+	}
+	function build_options(select_par, opt_list){
+		//var opt = createOpt("0", 'all');
+		//select_par.appendChild(opt);
+		for(var i = 0;i < opt_list.length; i++){
+			opt = createOpt(i.toString(), opt_list[i]);
+			select_par.appendChild(opt);
+		}
+	}
+	function query_data() {
+		var city = city_list[parseInt(city_select.value)];
+		var sort_id = parseInt(sort_select.value);
+		var skill_data = city_data[city];
+		skill_data.sort(function(a,b){return b[sort_id + 1] - a[sort_id + 1]});
+		//先排序
+		var xData = [];
+		var domlowData = [];
+		var domupData = [];
+		var vallowData = [];
+		var valupData = [];
+		for(var i=0;i < Math.min(50, skill_data.length); i++){
+			//console.log(i.toString());
+			//console.log(skill_data[i]);
+			xData.push(skill_data[i][0]);
+			vallowData.push(skill_data[i][1]);
+			valupData.push(skill_data[i][2]);
+			domlowData.push(skill_data[i][3]);
+			domupData.push(skill_data[i][4]);
+		}
+		update(xData, domlowData, domupData, vallowData, valupData);
+	}
+	
+	function update(xData, domlowData, domupData, vallowData, valupData){
+		var rankData = [];
+		for(var i=1;i<=xData.length;i++){
+			rankData.push(i.toString() + ": " + xData[i-1])
+		}
+		let scale = 2;
+		let legend=['Domination (Lower Bound)', 'Domination (Upper Bound)', 'Value (Lower Bound)', 'Value (Upper Bound)'];
+		var background = "#0e2147"; //背景 
+		let textColor = "#fff";
+		let lineColor="rgba(255,255,255,0.2)";
+		let colors = [{
+				borderColor: "rgba(227,161,96,1)",
+				start: "rgba(227,161,96,0.8)",
+				end: "rgba(227,161,96,0.3)"
+			},
+			{
+				borderColor: "rgba(227,69,55,1)",
+				start: "rgba(227,69,55,0.3)",
+				end: "rgba(227,69,55,0.8)"
+			},
+			{
+				borderColor: "rgba(0,222,255,1)",
+				start: "rgba(0,222,255,0.3)",
+				end: "rgba(0,222,255,0.8)"
+			},
+			{
+				borderColor: "rgba(0,255,165,1)",
+				start: "rgba(0,255,165,0.3)",
+				end: "rgba(0,255,165,0.8)"
+			},
+		];
+		var option = {
+			baseOption: {
+				backgroundColor: background,
+				timeline: {
+					show: false,
+					top: 0,
+					data: []
+				},
+				legend: {
+					top: '5%',
+					right: '5%',
+					itemWidth: 20,
+					itemHeight: 5,
+					itemGap: 80,
+					icon: 'horizontal',
+					textStyle: {
+						color: '#ffffff',
+						fontSize: 20,
+					},
+					data: legend
+				},
+				grid: [{
+					show: false,
+					left: '7%',
+					top: '10%',
+					bottom: '8%',
+					containLabel: true,
+					width: '37%'
+				}, {
+					show: false,
+					left: '51%',
+					top: '12%',
+					bottom: '8%',
+					width: '0%'
+				}, {
+					show: false,
+					right: '7%',
+					top: '10%',
+					bottom: '8%',
+					containLabel: true,
+					width: '37%'
+				}],
+				xAxis: [{
+					type: 'value',
+					inverse: true,
+					axisLine: {
+						show: false
+					},
+					axisTick: {
+						show: false
+					},
+					position: 'top',
+					axisLabel: {
+						show: true,
+						color: textColor
+					},
+					splitLine:{
+						 show: true,
+						lineStyle:{
+							color:lineColor
+						}
+					},
+				}, {
+					gridIndex: 1,
+					show: false
+				}, {
+					gridIndex: 2,
+					axisLine: {
+						show: false
+					},
+					axisTick: {
+						show: false
+					},
+					position: 'top',
+					axisLabel: {
+						show: true,
+						color: textColor
+					},
+					 splitLine:{
+						 show: true,
+						lineStyle:{
+							color:lineColor
+						}
+					},
+				}],
+				yAxis: [{
+					type: 'category',
+					inverse: true,
+					boundaryGap: true,
+					position: 'right',
+					axisLine: {
+						show: true
+					},
+					axisTick: {
+						show: false
+					},
+					axisLabel: {
+						show: false
+					},
+					data: xData
+				}, 
+				{
+					gridIndex: 1,
+					type: 'category',
+					boundaryGap: true,
+					inverse: true,
+					position: 'left',
+					axisLine: {
+						show: false
+					},
+					axisTick: {
+						show: false
+					},
+					axisLabel: {
+						show: true,
+						//padding:[30,0,0,0],
+						textStyle: {
+							color: '#ffffff',
+							fontSize: 20
+						},
+						align: "center"
+					},
+					data: rankData
+				}, 
+				{
+					gridIndex: 2,
+					type: 'category',
+					boundaryGap: true,
+					inverse: true,
+					position: 'left',
+					axisLine: {
+						show: false
+					},
+					axisTick: {
+						show: false
+					},
+					axisLabel: {
+						show: false
+					},
+					data: xData
+				}],
+				series: [],
+				dataZoom : [{
+					type: 'slider',
+					show: true,
+					yAxisIndex: [0, 1, 2],//设置组件控制的y轴
+					left: '93%',//距离左侧的距离 可以使百分比，也可以是像素 left: '30'（30像素）
+					start: 0,
+					end: 30}]
+
+			},
+			options: []
+		}
+
+		option.options.push({
+			series: [{
+					name: "Domination (Lower Bound)",
+					type: "bar",
+					barWidth:14,
+					stack: "1",
+					itemStyle: {
+						normal: {
+							color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{
+									offset: 0,
+									color: colors[0].start
+								},
+								{
+									offset: 1,
+									color: colors[0].end
+								}
+							]),
+						}
+					},
+					label: {
+						normal: {
+							show: false,
+						}
+					},
+					data: domlowData,
+					animationEasing: "elasticOut"
+				},
+				
+				{
+					name: "Domination (Upper Bound)",
+					type: "bar",
+					barWidth: 14,
+					stack: "2",
+					itemStyle: {
+						normal: {
+							color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{
+									offset: 0,
+									color: colors[1].start
+								},
+								{
+									offset: 1,
+									color: colors[1].end
+								}
+							]),
+						}
+					},
+					label: {
+						normal: {
+							show: false,
+						}
+					},
+					data: domupData,
+					animationEasing: "elasticOut"
+				},
+				{
+					name: "Value (Lower Bound)",
+					type: "bar",
+					stack: "3",
+					barWidth: 14,
+					xAxisIndex: 2,
+					yAxisIndex: 2,
+					itemStyle: {
+						normal: {
+							color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{
+									offset: 0,
+									color: colors[2].start
+								},
+								{
+									offset: 1,
+									color: colors[2].end
+								}
+							]),
+						}
+					},
+					label: {
+						normal: {
+							show: false,
+						}
+					},
+					data: vallowData,
+					animationEasing: "elasticOut"
+				},
+				{
+					name: "Value (Upper Bound)",
+					type: "bar",
+					stack: "4",
+					barWidth: 14,
+					xAxisIndex: 2,
+					yAxisIndex: 2,
+					itemStyle: {
+						normal: {
+							color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{
+									offset: 0,
+									color: colors[3].start
+								},
+								{
+									offset: 1,
+									color: colors[3].end
+								}
+							]),
+						}
+					},
+					label: {
+						normal: {
+							show: false,
+						}
+					},
+					data: valupData,
+					animationEasing: "elasticOut"
+				}
+			]
+		});
+		if (option && typeof option === 'object') {
+			chart.setOption(option);
+		}
+	}
+	
+	query_data();
+    </script>
+</html>
+    
