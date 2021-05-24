@@ -32,10 +32,10 @@
         </div>
     </body>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
-    <script type="text/javascript" src="data/rank_all.js"></script>
-    <script type="text/javascript" src="data/rank_city.js"></script>
-    <script type="text/javascript" src="data/rank_company.js"></script>
-    <script type="text/javascript" src="data/rank_time.js"></script>
+    <script type="text/javascript" src="en_data/rank_all.js"></script>
+    <script type="text/javascript" src="en_data/rank_city.js"></script>
+    <script type="text/javascript" src="en_data/rank_company.js"></script>
+    <script type="text/javascript" src="en_data/rank_time.js"></script>
     <script type="text/javascript">
 	let nowClientWidth = document.documentElement.clientWidth;
 	let nowClientHeight = document.documentElement.clientHeight;
@@ -169,7 +169,7 @@
 					icon: 'horizontal',
 					textStyle: {
 						color: '#ffffff',
-						fontSize: nowSize(30),
+						fontSize: nowSize(20),
 					},
 					data: legend
 				},
@@ -179,7 +179,7 @@
 					top: '10%',
 					bottom: '8%',
 					containLabel: true,
-					width: '37%'
+					width: '33%'
 				}, {
 					show: false,
 					left: '51%',
@@ -192,7 +192,7 @@
 					top: '10%',
 					bottom: '8%',
 					containLabel: true,
-					width: '37%'
+					width: '33%'
 				}],
 				xAxis: [{
 					type: 'value',
@@ -252,7 +252,7 @@
 						show: false,
 						textStyle: {
 							color: '#ffffff',
-							fontSize: nowSize(30),
+							fontSize: nowSize(20),
 						}
 					},
 					data: xData
@@ -274,7 +274,7 @@
 						//padding:[30,0,0,0],
 						textStyle: {
 							color: '#ffffff',
-							fontSize: nowSize(30),
+							fontSize: nowSize(20),
 						},
 						align: "center"
 					},
@@ -296,7 +296,7 @@
 						show: false,
 						textStyle: {
 							color: '#ffffff',
-							fontSize: nowSize(30),
+							fontSize: nowSize(20),
 						}
 					},
 					data: xData
@@ -346,7 +346,6 @@
 					data: domlowData,
 					animationEasing: "elasticOut"
 				},
-				
 				{
 					name: "Domination (Upper Bound)",
 					type: "bar",
